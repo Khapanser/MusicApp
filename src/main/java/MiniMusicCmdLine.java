@@ -7,8 +7,8 @@ public class MiniMusicCmdLine {
 
     public static void main(String[] args) {
         MiniMusicCmdLine mini = new MiniMusicCmdLine();
-        int instrument = Integer.parseInt(args[0]);
-        int note = Integer.parseInt(args[1]);
+        int instrument = 11; //Integer.parseInt(args[0]);
+        int note = 42;  //Integer.parseInt(args[1]);
         mini.play(instrument, note);
     }
 
@@ -28,7 +28,7 @@ public class MiniMusicCmdLine {
             track.add(changeInstrument);
 
             ShortMessage a = new ShortMessage();
-            a.setMessage(128,1,note,100);
+            a.setMessage(144,1,note,100);
             MidiEvent noteOn = new MidiEvent(a,1);
             track.add(noteOn);
 
@@ -36,6 +36,18 @@ public class MiniMusicCmdLine {
             b.setMessage(128, 1, note, 100);
             MidiEvent noteOff = new MidiEvent(b,16);
             track.add(noteOff);
+
+            ShortMessage a1 = new ShortMessage();
+            a1.setMessage(144,1,40,100);
+            MidiEvent noteOn1 = new MidiEvent(a1,17);
+            track.add(noteOn1);
+
+            ShortMessage b1 = new ShortMessage();
+            b1.setMessage(128, 1, 40, 100);
+            MidiEvent noteOff1 = new MidiEvent(b1,32);
+            track.add(noteOff1);
+
+
             player.setSequence(seq);
             player.start();
         } catch (Exception ex) {
