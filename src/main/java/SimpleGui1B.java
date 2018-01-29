@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.event.*;
 
 
-public class SimpleGui1B {
+public class SimpleGui1B implements ActionListener {
     JButton button;
 
     public static void main (String[] args)
