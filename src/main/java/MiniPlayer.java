@@ -10,6 +10,14 @@ public class MiniPlayer {
     static JFrame f;
     static MyPanel control;
 
+    public static void main(String[] args)
+    {
+        MiniPlayer pl = new MiniPlayer();
+        pl.go();
+        pl.StartAlg();
+    }
+
+
     public void go(){
         f = new JFrame("Music plus Graphics");
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -19,12 +27,6 @@ public class MiniPlayer {
         f.setVisible(true);
     }
 
-    public static void main(String[] args)
-    {
-        MiniPlayer pl = new MiniPlayer();
-        pl.go();
-        pl.StartAlg();
-    }
 
     public void StartAlg()
     {
@@ -76,15 +78,15 @@ public class MiniPlayer {
                 msg = true;
                 control.repaint();
             }
-            public void PaintComponent(Graphics g)
+            public void paintComponent(Graphics g)
             {
                 if (msg)
                 {
                     Graphics2D g2 = (Graphics2D) g;
-                int x = (int)(/*Math.random()*50 +*/ 100);
-                int y = (int)(/*Math.random()*50 +*/ 100);
+                int x = (int)(Math.random()*50 + 100);
+                int y = (int)(Math.random()*50 + 100);
                 g2.setColor(Color.GREEN);
-                g2.fillOval(x,y,10,10);
+                g2.fillOval(x,y,20,20);
                 msg = false;
                 }
             }
