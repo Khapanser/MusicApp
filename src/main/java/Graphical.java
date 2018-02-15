@@ -47,7 +47,7 @@ public class Graphical {
             x=x+7;
             y= (int) (70+10*Math.sin(x));
 
-            drawPanel.repaint();
+           drawPanel.repaint();
             try{
                 Thread.sleep(50);
             }

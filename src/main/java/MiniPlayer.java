@@ -14,22 +14,26 @@ public class MiniPlayer {
         f = new JFrame("Music plus Graphics");
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setSize(400, 400);
+        control = new MyPanel();
         f.getContentPane().add(control);
         f.setVisible(true);
     }
 
     public static void main(String[] args)
-            go()
+    {
+        MiniPlayer pl = new MiniPlayer();
+        pl.go();
+        pl.StartAlg();
+    }
+
+    public void StartAlg()
     {
         try{
-
             Sequencer sequencer = MidiSystem.getSequencer();
             sequencer.open();
 
             int[] eventsIWant = {127};
-            control = new MyPanel();
             sequencer.addControllerEventListener(control,eventsIWant);
-
 
             Sequence seq = new Sequence(Sequence.PPQ,4);
             Track track = seq.createTrack();
@@ -64,19 +68,27 @@ public class MiniPlayer {
         }
     }
     */
+         class MyPanel extends JPanel implements ControllerEventListener{
+             boolean msg = false;
+            public void controlChange(ShortMessage event)
+            {
+                System.out.println(" LA ");
+                msg = true;
+                control.repaint();
+            }
+            public void PaintComponent(Graphics g)
+            {
+                if (msg)
+                {
+                    Graphics2D g2 = (Graphics2D) g;
+                int x = (int)(/*Math.random()*50 +*/ 100);
+                int y = (int)(/*Math.random()*50 +*/ 100);
+                g2.setColor(Color.GREEN);
+                g2.fillOval(x,y,10,10);
+                msg = false;
+                }
+            }
 
-    static class MyPanel extends JPanel implements ControllerEventListener{
-        public void controlChange(ShortMessage event)
-        {
-            System.out.println(" LA ");
-            repaint();
         }
-
-        public void PaintComponent(Graphics g)
-        {
-
-        }
-
-    }
 
 }
