@@ -39,7 +39,7 @@ public class MiniPlayer {
 
             Sequence seq = new Sequence(Sequence.PPQ,4);
             Track track = seq.createTrack();
-        for (int i = 5; i<61; i+=4)
+        for (int i = 20; i<61; i+=2)
         {
             track.add(makeEvent(144,1,i,100,i));
             track.add(makeEvent(176,1,127,0,i));
