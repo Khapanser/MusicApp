@@ -3,8 +3,8 @@ package main.java;
 import javax.sound.midi.*;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+//import java.awt.event.ActionEvent;
+//import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 
@@ -30,7 +30,7 @@ public class BBox {
     {
         theFrame = new JFrame("BBox");
         theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // TODO разобрать следующие три строки
+        // TODO BorderLayout -> разбор
         BorderLayout layout = new BorderLayout();
         JPanel background = new JPanel(layout);
         background.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
@@ -43,19 +43,28 @@ public class BBox {
         Создаем кнопки, делаем их слушателями и добавляем в коробку
          */
         JButton start = new JButton("Start");
-        start.addActionListener(new MyStartListener());
+        /**--First version:*/
+        //start.addActionListener(new MyStartListener());
+        /** --version with lambda-function: */
+        start.addActionListener(event -> buildTrackAndStart());
         buttonBox.add(start);
-
+/** --lambda-f*/
         JButton stop = new JButton("Stop");
-        stop.addActionListener(new MyStopListener());
+        stop.addActionListener(event -> sequencer.stop());
         buttonBox.add(stop);
-
+/** --lambda-f*/
         JButton upTempo = new JButton("Tempo Up");
-        upTempo.addActionListener(new MyUpTempoListener());
+        upTempo.addActionListener(event -> {
+            float tempoFactor = sequencer.getTempoFactor();
+            sequencer.setTempoFactor((float)(tempoFactor*1.03));
+        });
         buttonBox.add(upTempo);
-
+/** --lambda-f*/
         JButton downTempo = new JButton("Tempo Down");
-        downTempo.addActionListener(new MyDownTempoListener());
+        downTempo.addActionListener(event -> {
+            float tempoFactor = sequencer.getTempoFactor();
+            sequencer.setTempoFactor((float)(tempoFactor*.97));
+        });
         buttonBox.add(downTempo);
 
         /*
@@ -72,7 +81,7 @@ public class BBox {
 
         theFrame.getContentPane().add(background);
 
-        //TODO изучить
+        //TODO изучить использование grid
         GridLayout grid = new GridLayout(16,16);
         grid.setVgap(1);
         grid.setHgap(2);
@@ -138,7 +147,7 @@ public class BBox {
             sequencer.setTempoInBPM(120);
         } catch(Exception e) {e.printStackTrace();}
     }
-
+/** --block disabled due to the lambda-f using
     public class MyStartListener implements ActionListener{
         public void actionPerformed(ActionEvent a){
             buildTrackAndStart();
@@ -163,7 +172,7 @@ public class BBox {
             float tempoFactor = sequencer.getTempoFactor();
             sequencer.setTempoFactor((float)(tempoFactor*.97));
         }
-    }
+    }*/
 
     public void makeTracks(int[] list){
 
