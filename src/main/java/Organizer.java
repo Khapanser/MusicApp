@@ -21,8 +21,8 @@ public class Organizer {
     }
 
     public void go(){
-        String[] str = {"UGCS-1142 - Description ","UGCS-1515 - Description2","UGCS-3893 - Description3", "UGCS-2900 - Description4",
-                        "UGCS-1414 - Description5", "UGCS-1434 - Description6"};
+        String[] str = {"TTTT-1142 - Description ","TTTT-1515 - Description2","TTTT-3893 - Description3", "TTTT-2900 - Description4",
+                        "TTTT-1414 - Description5", "TTTT-1434 - Description6"};
         panel3 = new JPanel();
         frame = new JFrame("Organizer");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
