@@ -3,32 +3,36 @@ package main.java;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
 
 public class Organizer {
-    JFrame frame;
-    JFrame openFrame;
-    JButton newButton;
-    JButton saveButton;
-    JButton delButton;
-    JPanel panel1;
-    JPanel panel2;
-    JPanel mainPanel;
-    JEditorPane editor1;
-    JEditorPane editor2;
-    JMenu menu;
-    DefaultListModel<QCard> listModel;
+    private JFrame frame;
+    private JFrame openFrame;
+    private JButton newButton;
+    private JButton saveButton;
+    private JButton delButton;
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel mainPanel;
+    private JEditorPane editor1;
+    private JEditorPane editor2;
+    private JMenu menu;
+    private DefaultListModel<QCard> listModel;
+    private QCard selCard;   // ссылка на текущий выбранный объект
 
+    private JLabel label1;
+    private JLabel label2;
 
     public static void main(String[] args){
         Organizer org = new Organizer();
         org.go();
     }
 
-    public void go(){
+    private  void go(){
         /**
          * Создаем DefaultListModel для добавления
          * в него карт из файла.
@@ -60,15 +64,15 @@ public class Organizer {
 
         //Add list's scroll (GUI)
         JScrollPane scroller = new JScrollPane(list);
-        scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         scroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.setVisibleRowCount(4);
 
         //GUI
-        newButton = new JButton("  NEW  ");
-        saveButton = new JButton(" SAVE ");
-        delButton = new JButton("DELETE");
+        newButton = new JButton("  New note  ");
+        saveButton = new JButton(" Save note");
+        delButton = new JButton("Delete note");
 
         panel2 = new JPanel();
         panel2.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
@@ -85,14 +89,36 @@ public class Organizer {
 
         panel1 = new JPanel();
 
+        label1 = new JLabel("Title");
+        label2 = new JLabel("Description");
         editor1 = new JEditorPane();
         editor1.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         editor2 = new JEditorPane();
         editor2.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         panel1.setLayout(new BoxLayout(panel1,BoxLayout.Y_AXIS));
         panel1.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        /*
         panel1.add(BorderLayout.NORTH,editor1);
         panel1.add(BorderLayout.SOUTH,editor2);
+        */
+
+        //Добавим скроллы на редакторы
+        JScrollPane scroller1 = new JScrollPane(editor1);
+        scroller1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scroller1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        //list.setVisibleRowCount(4);
+
+        //Добавим скроллы на редакторы
+        JScrollPane scroller2 = new JScrollPane(editor2);
+        scroller2.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scroller2.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        //list.setVisibleRowCount(4);
+
+
+        panel1.add(label1);
+        panel1.add(scroller1);
+        panel1.add(label2);
+        panel1.add(scroller2);
 
 
         mainPanel.add(BorderLayout.NORTH, panel1);
@@ -101,20 +127,63 @@ public class Organizer {
 
         menu = new JMenu();
         frame.add(mainPanel);
-        frame.setSize(500, 500);
+        frame.setSize(1000, 800);
         frame.setVisible(true);
         frame.add(menu);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-
-       /* list.addActionListener(event -> {
-
+        /**
+         * Слушаем нажатие на элемент списка
+         */
+       /*
+       list.addListSelectionListener(event -> {
+            selCard = list.getSelectedValue();
+            editor1.setText(selCard.getTitle());
+            //System.out.println("selCard.getTitle() = "+ selCard.getTitle());
+            editor2.setText(selCard.getDescription());
+            //System.out.println("selCard.getDescription() = "+ selCard.getDescription());
         });*/
-        list.addListSelectionListener(event -> {
-            editor1.setContentType(list.getSelectedValue());
 
+        list.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                selCard = list.getSelectedValue();
+                editor1.setText(selCard.getTitle());
+                System.out.println("selCard.getTitle() = "+ selCard.getTitle());
+                editor2.setText(selCard.getDescription());
+                System.out.println("selCard.getDescription() = "+ selCard.getDescription());
+            }
         });
 
+
+
+        /**
+         * Слушаем сохранение изменений (Button Save)
+         */
+        saveButton.addActionListener(event -> {
+            selCard.setTitle(editor1.getText());
+            selCard.setDescription(editor2.getText());
+            list.updateUI();  // отображение изменений в списке( title)
+        });
+
+        /**
+         * Слушаем создание новой заметки (Button NEW)
+         */
+        newButton.addActionListener(event -> {
+            QCard newCard = new QCard("new","new");
+            listModel.addElement(newCard);
+        });
+
+        /**
+         * Удаление элемента из списка (Button DELETE)
+         */
+       delButton.addActionListener(event -> {
+           if (!list.isSelectionEmpty()) {
+               listModel.removeElement(selCard);
+               selCard = listModel.firstElement();
+           }
+        });
 
     }
 
@@ -150,5 +219,10 @@ public class Organizer {
         QCard card = new QCard(result[0],result[1]);
         listModel.addElement(card);
     }
+
+    /**
+     * TODO пишем обратно в файл со всеми изменениями
+     */
+
 
 }

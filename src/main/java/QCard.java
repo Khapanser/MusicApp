@@ -11,6 +11,14 @@ public class QCard {
         this.description = d;
     }
 
+    public void setTitle(String t) {
+        this.title = t;
+    }
+
+    public void setDescription(String d){
+        this.description = d;
+    }
+
     public String getTitle()
     {
         return this.title;
