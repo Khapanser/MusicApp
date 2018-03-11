@@ -5,9 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 
 public class Organizer {
     private JFrame frame;
@@ -15,6 +13,7 @@ public class Organizer {
     private JButton newButton;
     private JButton saveButton;
     private JButton delButton;
+    private JButton writeButton;
     private JPanel panel1;
     private JPanel panel2;
     private JPanel mainPanel;
@@ -42,9 +41,10 @@ public class Organizer {
         /**
          * Добавляем инициацию считывания из файла при запуске.
          */
+        XmlParser loadFile = new XmlParser();
         JFileChooser fileOpen = new JFileChooser();
         fileOpen.showOpenDialog(openFrame);
-        loadFile(fileOpen.getSelectedFile());
+        listModel = loadFile.parser(fileOpen.getSelectedFile());
 
         //GUI
         mainPanel = new JPanel();
@@ -73,6 +73,8 @@ public class Organizer {
         newButton = new JButton("  New note  ");
         saveButton = new JButton(" Save note");
         delButton = new JButton("Delete note");
+        writeButton = new JButton("Write to file...");
+
 
         panel2 = new JPanel();
         panel2.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
@@ -85,6 +87,7 @@ public class Organizer {
         panel2.add(newButton);
         panel2.add(saveButton);
         panel2.add(delButton);
+        panel2.add(writeButton);
 
 
         panel1 = new JPanel();
@@ -97,10 +100,6 @@ public class Organizer {
         editor2.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         panel1.setLayout(new BoxLayout(panel1,BoxLayout.Y_AXIS));
         panel1.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-        /*
-        panel1.add(BorderLayout.NORTH,editor1);
-        panel1.add(BorderLayout.SOUTH,editor2);
-        */
 
         //Добавим скроллы на редакторы
         JScrollPane scroller1 = new JScrollPane(editor1);
@@ -135,14 +134,6 @@ public class Organizer {
         /**
          * Слушаем нажатие на элемент списка
          */
-       /*
-       list.addListSelectionListener(event -> {
-            selCard = list.getSelectedValue();
-            editor1.setText(selCard.getTitle());
-            //System.out.println("selCard.getTitle() = "+ selCard.getTitle());
-            editor2.setText(selCard.getDescription());
-            //System.out.println("selCard.getDescription() = "+ selCard.getDescription());
-        });*/
 
         list.addMouseListener(new MouseAdapter() {
             @Override
@@ -155,8 +146,6 @@ public class Organizer {
                 System.out.println("selCard.getDescription() = "+ selCard.getDescription());
             }
         });
-
-
 
         /**
          * Слушаем сохранение изменений (Button Save)
@@ -185,12 +174,27 @@ public class Organizer {
            }
         });
 
+        /**
+         * Пишем обратно в файл со всеми изменениями
+         */
+
+       writeButton.addActionListener(event -> {
+           XmlWriter wr = new XmlWriter();
+           JFileChooser fileSave = new JFileChooser();
+           fileSave.showSaveDialog(frame);
+           wr.writer(listModel,fileSave.getSelectedFile());
+       });
+
     }
 
     /**
      * Считываем построчно из файла и создаем карту через makeCard;
+     * ЭТО РАБОЧИЙ МЕТОД ДЛЯ ФАЙЛА ВИДА TITLE/DESCRIPTION
+     * Закоментирован вместе с методом makeCard
      * @param file
      */
+
+    /*
     private void loadFile(File file)
     {
         try {
@@ -207,22 +211,36 @@ public class Organizer {
             System.out.println("ERROR: провалилась загрузка файла!");
             ex.printStackTrace();}
     }
+*/
 
     /**
      * Принимаем строку,
      * Делим её пополам через "/",
      * Создаём новую карту.
-     * @param lineToParse
+     //* @param lineToParse
      */
+
+    /*
     private void makeCard(String lineToParse) {
         String[] result = lineToParse.split("/");
         QCard card = new QCard(result[0],result[1]);
         listModel.addElement(card);
     }
+    */
 
-    /**
-     * TODO пишем обратно в файл со всеми изменениями
-     */
-
+    /*
+    //РАБОЧЕЕ СОЗРАНЕНИЕ ДЛЯ ВИДА title/description
+    private void saveFile(File file){
+        try{
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            for (int i = 0; i<listModel.getSize();i++ ){
+                QCard ca = listModel.getElementAt(i);
+                writer.write(ca.getTitle() + "/");
+                writer.write(ca.getDescription() + "\n");
+            }
+            writer.close();
+        } catch (Exception exc){exc.printStackTrace();}
+    }
+    */
 
 }
