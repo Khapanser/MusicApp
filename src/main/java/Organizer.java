@@ -6,6 +6,10 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.*;
+import java.net.Socket;
+import java.util.Iterator;
+//import org.apache.commons.io;
+//import org.apache.commons.io.FileUtils;
 
 public class Organizer {
     private JFrame frame;
@@ -19,12 +23,24 @@ public class Organizer {
     private JPanel mainPanel;
     private JEditorPane editor1;
     private JEditorPane editor2;
-    private JMenu menu;
     private DefaultListModel<QCard> listModel;
     private QCard selCard;   // ссылка на текущий выбранный объект
-
     private JLabel label1;
     private JLabel label2;
+    //MenuBar
+    private JMenuBar menuBar;
+    private JMenu menu;
+    private JMenuItem loadMenuItem;
+
+    // лист, в который всё загоняем
+    JList<QCard> list;
+
+
+    // Указываем начальные параметры для подключения к серверу
+    Socket socket;
+    //порт подключения
+    int portNumber = 5000;
+
 
     public static void main(String[] args){
         Organizer org = new Organizer();
@@ -32,21 +48,50 @@ public class Organizer {
     }
 
     private  void go(){
+
+
         /**
          * Создаем DefaultListModel для добавления
          * в него карт из файла.
          */
-        listModel = new DefaultListModel<>();
+        listModel = new DefaultListModel<QCard>();
+
+        /**
+         * Добавляем пока новый пустой listModel на list.
+         */
+        list = new JList<>(listModel);
+        //list.setVisible(false);
+        //list = new JList<>();
+
+        /**
+         * добавим менюбар и первый менюитем
+         */
+            //Create the menu bar.
+        menuBar = new JMenuBar();
+            //Build the first menu.
+        menu = new JMenu("File");
+        menuBar.add(menu);
+        loadMenuItem = new JMenuItem("Загрузить последнюю версию с сервера");
+        menu.add(loadMenuItem);
+        /**
+         * Реализовать загрузку элемента listModel с сервера
+         */
+
+
+
 
         /**
          * Добавляем инициацию считывания из файла при запуске.
          */
+        /*
         XmlParser loadFile = new XmlParser();
         JFileChooser fileOpen = new JFileChooser();
         fileOpen.showOpenDialog(openFrame);
         listModel = loadFile.parser(fileOpen.getSelectedFile());
+        */
 
-        //GUI
+        //GUI секция
+        //__________________________________________________________________________________________
         mainPanel = new JPanel();
         frame = new JFrame("Organizer");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -58,7 +103,8 @@ public class Organizer {
          * В дальнеёшем, это должен быть подгружаемый список из файла
          * (уже перенесён в makeCard)
          */
-        JList<QCard> list = new JList<>(listModel);
+
+
 
 
 
@@ -123,12 +169,11 @@ public class Organizer {
         mainPanel.add(BorderLayout.NORTH, panel1);
         mainPanel.add(BorderLayout.SOUTH,panel2);
 
-
-        menu = new JMenu();
+        //Добавлен menuBar
+        frame.setJMenuBar(menuBar);
         frame.add(mainPanel);
         frame.setSize(1000, 800);
         frame.setVisible(true);
-        frame.add(menu);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         /**
@@ -139,11 +184,13 @@ public class Organizer {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                selCard = list.getSelectedValue();
-                editor1.setText(selCard.getTitle());
-                System.out.println("selCard.getTitle() = "+ selCard.getTitle());
-                editor2.setText(selCard.getDescription());
-                System.out.println("selCard.getDescription() = "+ selCard.getDescription());
+                if(!list.isSelectionEmpty()) {
+                    selCard = list.getSelectedValue();
+                    editor1.setText(selCard.getTitle());
+                    System.out.println("selCard.getTitle() = " + selCard.getTitle());
+                    editor2.setText(selCard.getDescription());
+                    System.out.println("selCard.getDescription() = " + selCard.getDescription());
+                }
             }
         });
 
@@ -184,6 +231,67 @@ public class Organizer {
            fileSave.showSaveDialog(frame);
            wr.writer(listModel,fileSave.getSelectedFile());
        });
+
+        loadMenuItem.addActionListener(event -> {
+            System.out.println("Попытка загрузить файл с сервера...");
+            try {
+                socket = new Socket("127.0.0.1", portNumber);
+                ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+                byte[] b = (byte[]) ois.readObject();
+                //System.out.println("10ый байт: " + b[10]);
+
+                try (FileOutputStream fos = new FileOutputStream("C:\\Users\\Александра\\OrganizerClientFiles\\ttt.xml")) {
+                    fos.write(b);
+                    fos.close(); //There is no more need for this line since you had created the instance of "fos" inside the try. And this will automatically close the OutputStream
+                }
+
+                File text = new File("C:\\Users\\Александра\\OrganizerClientFiles\\ttt.xml");
+                XmlParser par = new XmlParser();
+                DefaultListModel<QCard> listModel2 = new DefaultListModel<>();
+                listModel2  = par.parser(text);
+
+                System.out.println("СЧИТАННАЯ ПЕРВАЯ КАРТА(desc):"+listModel2.get(1).getDescription());
+                // TODO Раз считанную карту показывает, значит выгрузка всё работает. Остаётся проблема с работой в UI
+                for (int i = 0; i< listModel2.getSize(); i++)
+                {
+                    QCard card = new QCard(listModel2.get(i).getTitle(),listModel2.get(i).getDescription());
+                    listModel.addElement(card);
+                }
+                //попробуем просто прогрузить всё.
+                //Удаляем старое содержание
+                //list.removeAll();
+                //list = new JList<>(listModel);
+                //selCard = listModel.firstElement();
+                list.updateUI();
+
+                //FileUtils.writeByteArrayToFile(new File("pathname"), b);
+                //QCard cardFromServer = (QCard)ois.readObject();
+        //System.out.println("NewCard: "+cardFromServer.getTitle() + ": " + cardFromServer.getDescription());
+                //listModel = (DefaultListModel<QCard>) ois.readObject();
+                //String mes = (String)ois.readObject();
+                //System.out.println("MessageFromServer is: " + mes);
+                //listModel = (DefaultListModel<QCard>) ois.readObject();
+                //QCard cardFromServer = listModel.elementAt(1);
+                //QCard cardFromServer = (QCard)ois.readObject();
+                //System.out.println("NewCard: "+cardFromServer.getTitle() + ": " + cardFromServer.getDescription());
+                //надо сразу использовать загруженный listModel:
+                //System.out.println("Пробуем получить первый элемент "+ listModel.get(1));
+                //System.out.println("посмотрим размер listModel после выгрузки:" + listModel.getSize());
+            /*
+
+                list = new JList<>(listModel);
+                list.updateUI();
+*/
+                System.out.println("Подключение к серверу выполнено успешно!");
+                System.out.println("Данные выгружены в listModel.");
+
+            } catch (Exception e){
+                e.printStackTrace();
+                System.out.println("WARN: Ошибка со считыванием данных с сервера...");
+
+            }
+        });
+
 
     }
 

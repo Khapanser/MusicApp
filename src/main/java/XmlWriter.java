@@ -16,7 +16,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class XmlWriter {
-
+    /**
+     *
+     * @param listModel
+     * @param file
+     */
     public void writer(DefaultListModel<QCard> listModel, File file) {
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
