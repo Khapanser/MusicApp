@@ -22,7 +22,9 @@ public class Organizer {
     private QCard selCard;   // ссылка на текущий выбранный объект
     private JLabel label1;
     private JLabel label2;
+    private JLabel label3;
     private Font font;
+    private Font font2;
     //MenuBar
     private JMenuBar menuBar;
     private JMenu menu;
@@ -49,7 +51,9 @@ public class Organizer {
          * Создаем DefaultListModel для добавления
          * в него карт из файла.
          */
-        //font = new Font("Garamond", Font.BOLD,14);
+        font = new Font("TimesRoman", Font.BOLD,18);
+        font2  = new Font("TimesRoman",Font.PLAIN,18);
+
         listModel = new DefaultListModel<QCard>();
 
         /**
@@ -96,14 +100,24 @@ public class Organizer {
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.setVisibleRowCount(4);
 
+        list.setFont(font);
+
         //GUI
-        newButton = new JButton("  New note  ");
-        saveButton = new JButton(" Save note");
-        delButton = new JButton("Delete note");
+        newButton = new JButton("      New note      ");
+        saveButton = new JButton("     Save note    ");
+        delButton = new JButton("    Delete note    ");
+
+        newButton.setFont(font);
+        saveButton.setFont(font);
+        delButton.setFont(font);
 
         panel2 = new JPanel();
         panel2.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         panel2.setLayout(new BoxLayout(panel2,BoxLayout.Y_AXIS));
+
+        label3 = new JLabel("My notes");
+        label3.setFont(font);
+        panel2.add(label3);
         panel2.add(scroller);
 
         newButton.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
@@ -116,13 +130,19 @@ public class Organizer {
         panel1 = new JPanel();
 
         label1 = new JLabel("Title");
+        label1.setFont(font);
+
         label2 = new JLabel("Description");
+        label2.setFont(font);
         editor1 = new JEditorPane();
         editor1.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         editor2 = new JEditorPane();
         editor2.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         panel1.setLayout(new BoxLayout(panel1,BoxLayout.Y_AXIS));
         panel1.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+
+        editor1.setFont(font2);
+        editor2.setFont(font2);
 
         //Добавим скроллы на редакторы
         JScrollPane scroller1 = new JScrollPane(editor1);
