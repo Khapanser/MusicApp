@@ -1,7 +1,6 @@
 package main.java;
 
 import javax.swing.*;
-import java.io.File;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -11,9 +10,15 @@ import java.nio.file.Path;
 
 /**
  * В рамках первой версии, сервер должен:
- * 1. Найти XML
- * 2. Преобразовать его в listModel с помощью XmlReader.
- * 3. Отправить listModel на клиент
+ * 1. Преобразовать XML в byte[]
+ * 2. Отправить byte[] на клиент
+ */
+
+/** TODO-list
+ * TODO 1. Добавить второй поток
+ * TODO 2. Добавить новый метод run() (для Runnable)
+ * TODO 3. В методе run описать считывание byte[] с клиента
+ * TODO 4. Преобразовать byte[] в XML-файл.
  */
 public class OrganaizerServer {
     ServerSocket serverSocket;
@@ -25,8 +30,6 @@ public class OrganaizerServer {
     public static void main(String[] args){
         OrganaizerServer server = new OrganaizerServer();
 
-
-
         try {
             server.go();
         } catch(Exception e){
@@ -35,34 +38,19 @@ public class OrganaizerServer {
         }
     }
 
-        //Делаем метод synchronize
+        //Делаем synchronize в метод
     public synchronized void go(){
         try {
             serverSocket = new ServerSocket(portNumber);
             while(true) {
                 socket = serverSocket.accept();
 
-                //Попробуем перегнать file to byte[]
+                //Преобразуем file to byte[]
                 Path path = Paths.get("C:\\Users\\Александра\\OrganizerServerFiles\\test.xml");
                 byte[] data = Files.readAllBytes(path);
-                //Считываем файл
-                //File file = new File("C:\\Users\\Александра\\OrganizerServerFiles\\test.xml");
-                //XmlParser par = new XmlParser();
-                //listModel = par.parser(file);
-                //System.out.println("Получен listModel размера"+ listModel.getSize());
-
+                //Отправляем файл на клиент:
                 ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
                 oos.writeObject(data);
-
-                // Со строкой работает...
-                // String send = "MessageFromServer";
-                // oos.writeObject(send);
-
-                //Пробуем отправить карточки:
-                //for (int i = 0; )
-                //oos.writeObject(listModel);
-                //oos.writeObject(listModel.get(0));
-
                 oos.close();
             }
         } catch(Exception e){
