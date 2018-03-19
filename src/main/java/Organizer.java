@@ -6,6 +6,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Organizer {
     private JFrame frame;
@@ -31,6 +34,7 @@ public class Organizer {
     private JMenuItem loadMenuItem;
     private  JMenuItem writeLocalyItem;
     private JMenuItem loadLocalyItem;
+    private  JMenuItem writeMenuItem;
 
     // Jlist for all QCards
     JList<QCard> list;
@@ -40,6 +44,8 @@ public class Organizer {
     Socket socket;
     // Указываем порт подключения
     int portNumber = 5000;
+
+    byte[] data;
 
     public static void main(String[] args){
         Organizer org = new Organizer();
@@ -75,6 +81,8 @@ public class Organizer {
         menu.add(writeLocalyItem);
         loadLocalyItem = new JMenuItem("Загрузить локальную версию");
         menu.add(loadLocalyItem);
+        writeMenuItem = new JMenuItem("Сохранить последнюю версию на сервер");
+        menu.add(writeMenuItem);
 
         /**
          * TODO сделать возможность загрузки локального списка
@@ -272,6 +280,34 @@ public class Organizer {
             }
         });
 
+        writeMenuItem.addActionListener(event -> {
+            System.out.println("Загружаем файл на сервер...");
+            //Сначала сохраним текущую версию локально в рабочую директорию
+            File file123 = new File("C:\\Users\\Александра\\OrganizerClientFiles\\ForServer.xml");
+            XmlWriter wrs = new XmlWriter();
+            wrs.writer(listModel,file123);
+            //Получим path
+            Path path = Paths.get("C:\\Users\\Александра\\OrganizerClientFiles\\ForServer.xml");
+            //Записываем файл в byte[]
+            try {
+                data = Files.readAllBytes(path);
+            } catch(Exception ry){ry.printStackTrace();}
+
+            // Получили выслать байты:
+            System.out.println("Высылаемый 10ый байт = "+data[10]);
+            while (true)
+            {
+                try {
+                    socket = new Socket("127.0.0.1", portNumber);
+                    ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                    oos.writeObject(data);
+                    //Thread.sleep(1000);
+
+                    //oos.close();
+                } catch(Exception rq){rq.printStackTrace();}
+            }
+
+        });
 
     }
 
