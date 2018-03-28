@@ -253,12 +253,12 @@ public class Organizer {
                 byte[] b = (byte[]) ois.readObject();
 
                 // Пишем byte[] в file:
-                try (FileOutputStream fos = new FileOutputStream("C:\\Users\\Александра\\OrganizerClientFiles\\ttt.xml")) {
+                try (FileOutputStream fos = new FileOutputStream("C:\\Users\\AKhaperskiy\\OrganizerClientFiles\\ttt.xml")) {
                     fos.write(b);
                     fos.close();
                 }
 
-                File text = new File("C:\\Users\\Александра\\OrganizerClientFiles\\ttt.xml");
+                File text = new File("C:\\Users\\AKhaperskiy\\OrganizerClientFiles\\ttt.xml");
                 XmlParser par = new XmlParser();
                 DefaultListModel<QCard> listModel2;
                 listModel2  = par.parser(text);
@@ -283,11 +283,11 @@ public class Organizer {
         writeMenuItem.addActionListener(event -> {
             System.out.println("Загружаем файл на сервер...");
             //Сначала сохраним текущую версию локально в рабочую директорию
-            File file123 = new File("C:\\Users\\Александра\\OrganizerClientFiles\\ForServer.xml");
+            File file123 = new File("C:\\Users\\AKhaperskiy\\OrganizerClientFiles\\ForServer.xml");
             XmlWriter wrs = new XmlWriter();
             wrs.writer(listModel,file123);
             //Получим path
-            Path path = Paths.get("C:\\Users\\Александра\\OrganizerClientFiles\\ForServer.xml");
+            Path path = Paths.get("C:\\Users\\AKhaperskiy\\OrganizerClientFiles\\ForServer.xml");
             //Записываем файл в byte[]
             try {
                 data = Files.readAllBytes(path);

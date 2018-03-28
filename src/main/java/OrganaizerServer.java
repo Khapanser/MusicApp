@@ -46,9 +46,9 @@ public class OrganaizerServer {
             serverSocket = new ServerSocket(portNumber);
             while(true) {
                 socket = serverSocket.accept();
-/**
+
                 //Преобразуем file to byte[]
-                Path path = Paths.get("C:\\Users\\Александра\\OrganizerServerFiles\\test.xml");
+                Path path = Paths.get("C:\\Users\\AKhaperskiy\\OrganizerServerFiles\\test.xml");
                 byte[] data = Files.readAllBytes(path);
                 //Отправляем файл на клиент:
                 ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
@@ -59,7 +59,7 @@ public class OrganaizerServer {
 
                 //попробуем в том же потоке принимать данные, если оно требуется
                 //oos.close();
-*/
+
                 // Добавим часть про чтение с клиента
 
                 //clientSocket = serverSocket.accept();
